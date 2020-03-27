@@ -156,8 +156,8 @@ vector<GLfloat> mat_mult(vector<GLfloat> A, vector<GLfloat> B) {
     }
     for(int i = 0; i < rows.size(); i++){
         int currentSum = 0;
-        for(int j = 0; j < columns.size(); j++){
-            currentSum += rows[i] * columns[j + 4];
+        for(int j = 0; j < columns.size(); j+= 4){
+            currentSum += rows[i] * columns[j];
         }
         result.push_back(currentSum);
     }
@@ -264,7 +264,7 @@ void display_func() {
 
     // TODO: Apply rotation(s) to the set of points
     
-    points = mat_mult(points, rotation_matrix_z(100));
+    points = mat_mult(points, rotation_matrix_z(45));
     GLfloat* vertices = vector2array(points);
 
     glVertexPointer(3,          // 3 components (x, y, z)
