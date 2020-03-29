@@ -54,7 +54,7 @@ vector<GLfloat> to_homogenous_coord(vector<GLfloat> cartesian_coords) {
         result.push_back(cartesian_coords[i]);
         result.push_back(cartesian_coords[i + 1]);
         result.push_back(cartesian_coords[i + 2]);
-        result.push_back(cartesian_coords[1.0]);
+        result.push_back(1.0);
     }
     return result;
 }
