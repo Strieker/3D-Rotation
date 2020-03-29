@@ -1,9 +1,9 @@
 /***
  Assignment-2: Rotating a Cube in 3-Dimensional Space
 
- Name: Wong, Alex (Please write your name in Last Name, First Name format)
+ Name: Strieker, Sages (Please write your name in Last Name, First Name format)
 
- Collaborators: Doe, John; Doe, Jane
+ Collaborators: KeAnna Anglin and Professor Wong
  ** Note: although the assignment should be completed individually
  you may speak with classmates on high level algorithmic concepts. Please
  list their names in this section
@@ -49,117 +49,76 @@ GLfloat* vector2array(vector<GLfloat> vec) {
 
 // Converts Cartesian coordinates to homogeneous coordinates
 vector<GLfloat> to_homogenous_coord(vector<GLfloat> cartesian_coords) {
-    vector<GLfloat> result = cartesian_coords;
-    result.insert(result.end(), 1);
+    vector<GLfloat> result;
+    for(int i = 0; i < cartesian_coords.size(); i+= 3) {
+        result.push_back(cartesian_coords[i]);
+        result.push_back(cartesian_coords[i + 1]);
+        result.push_back(cartesian_coords[i + 2]);
+        result.push_back(cartesian_coords[1.0]);
+    }
     return result;
 }
 
-// Converts Cartesian coordinates to homogeneous coordinates
+// Converts homogeneous coordinates to Cartesian coordinates
 vector<GLfloat> to_cartesian_coord(vector<GLfloat> homogenous_coords) {
     vector<GLfloat> result = homogenous_coords;
-    result.pop_back();
+    for(int i = 0; i < homogenous_coords.size(); i+= 4) {
+        result.push_back(homogenous_coords[i]);
+        result.push_back(homogenous_coords[i + 1]);
+        result.push_back(homogenous_coords[i + 2]);
+    }
     return result;
 }
 
 // Definition of a rotation matrix about the x-axis theta degrees
 vector<GLfloat> rotation_matrix_x (float theta) {
-    vector<GLfloat> rotate_mat_x;
-    rotate_mat_x.push_back(1);
-    rotate_mat_x.push_back(0);
-    rotate_mat_x.push_back(0);
-    rotate_mat_x.push_back(0);
-    
-    rotate_mat_x.push_back(0);
-    rotate_mat_x.push_back(cos(theta));
-    rotate_mat_x.push_back(-1 * sin(theta));
-    rotate_mat_x.push_back(0);
-    
-    rotate_mat_x.push_back(0);
-    rotate_mat_x.push_back(sin(theta));
-    rotate_mat_x.push_back(cos(theta));
-    rotate_mat_x.push_back(0);
-    
-    rotate_mat_x.push_back(0);
-    rotate_mat_x.push_back(0);
-    rotate_mat_x.push_back(0);
-    rotate_mat_x.push_back(1);
-    
+    vector<GLfloat> rotate_mat_x = {
+        1, 0, 0, 0,
+        0, cos(deg2rad(theta)), -sin(deg2rad(theta)), 0,
+        0, sin(deg2rad(theta)), cos(deg2rad(theta)), 0,
+        0, 0, 0, 1
+    };
     return rotate_mat_x;
 }
 
 // Definition of a rotation matrix along the y-axis by theta degrees
 vector<GLfloat> rotation_matrix_y (float theta) {
-    vector<GLfloat> rotate_mat_y;
-    rotate_mat_y.push_back(cos(theta));
-    rotate_mat_y.push_back(0);
-    rotate_mat_y.push_back(sin(theta));
-    rotate_mat_y.push_back(0);
-    
-    rotate_mat_y.push_back(0);
-    rotate_mat_y.push_back(1);
-    rotate_mat_y.push_back(0);
-    rotate_mat_y.push_back(0);
-    
-    rotate_mat_y.push_back(-1 * sin(theta));
-    rotate_mat_y.push_back(0);
-    rotate_mat_y.push_back(cos(theta));
-    rotate_mat_y.push_back(0);
-
-    rotate_mat_y.push_back(0);
-    rotate_mat_y.push_back(0);
-    rotate_mat_y.push_back(0);
-    rotate_mat_y.push_back(1);
-    
+    vector<GLfloat> rotate_mat_y {
+        cos(deg2rad(theta)), 0, sin(deg2rad(theta)), 0,
+        0, 1, 0, 0,
+        -sin(deg2rad(theta)), cos(deg2rad(theta)), 0, 0,
+        0, 0, 0, 1
+    };
     return rotate_mat_y;
 }
 
 // Definition of a rotation matrix along the z-axis by theta degrees
 vector<GLfloat> rotation_matrix_z (float theta) {
-    vector<GLfloat> rotate_mat_z;
-    rotate_mat_z.push_back(cos(theta));
-    rotate_mat_z.push_back(-1 * sin(theta));
-    rotate_mat_z.push_back(0);
-    rotate_mat_z.push_back(0);
-    
-    rotate_mat_z.push_back(sin(theta));
-    rotate_mat_z.push_back(cos(theta));
-    rotate_mat_z.push_back(0);
-    rotate_mat_z.push_back(0);
-    
-    rotate_mat_z.push_back(0);
-    rotate_mat_z.push_back(0);
-    rotate_mat_z.push_back(1);
-    rotate_mat_z.push_back(0);
-
-    rotate_mat_z.push_back(0);
-    rotate_mat_z.push_back(0);
-    rotate_mat_z.push_back(0);
-    rotate_mat_z.push_back(1);
+    vector<GLfloat> rotate_mat_z {
+        cos(deg2rad(theta)), -sin(deg2rad(theta)), 0, 0,
+        sin(deg2rad(theta)), cos(deg2rad(theta)), 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1,
+    };
     return rotate_mat_z;
-}
-
-bool isRotationMatrix(vector<GLfloat> P) {
-    return P.size() == 16;
 }
 
 // Perform matrix multiplication for A B
 vector<GLfloat> mat_mult(vector<GLfloat> A, vector<GLfloat> B) {
-    vector<GLfloat> rows = vector<GLfloat>();
-    vector<GLfloat> columns = vector<GLfloat>();
     vector<GLfloat> result;
-    if (isRotationMatrix(A)){
-        rows = A;
-        columns = B;
-    } else {
-        rows = B;
-        columns = A;
-    }
-    for(int i = 0; i < rows.size(); i++){
-        int currentSum = 0;
-        for(int j = 0; j < columns.size(); j+= 4){
-            currentSum += rows[i] * columns[j];
+    
+    int initial_rows = 4;
+    int initial_cols = 4;
+    int current_mult_points = int(B.size() / 4);
+    
+    for(int i = 0; i < current_mult_points; i++){
+        for(int j = 0; j < initial_rows; j++){
+            GLfloat cross_product = 0;
+            for(int k = 0; k < initial_cols; k++){
+                cross_product += A[4 * j + k] * B[4 * i + k];
+            }
+            result.push_back(cross_product);
         }
-        result.push_back(currentSum);
     }
     return result;
 }
@@ -261,10 +220,8 @@ void display_func() {
         0.0,    1.0,    1.0,
         0.0,    1.0,    1.0,
     };
-
-    // TODO: Apply rotation(s) to the set of points
     
-    points = mat_mult(points, rotation_matrix_z(45));
+    points = to_cartesian_coord(mat_mult(rotation_matrix_z(theta), to_homogenous_coord(points)));
     GLfloat* vertices = vector2array(points);
 
     glVertexPointer(3,          // 3 components (x, y, z)
