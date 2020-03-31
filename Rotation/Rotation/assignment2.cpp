@@ -61,7 +61,7 @@ vector<GLfloat> to_homogenous_coord(vector<GLfloat> cartesian_coords) {
 
 // Converts homogeneous coordinates to Cartesian coordinates
 vector<GLfloat> to_cartesian_coord(vector<GLfloat> homogenous_coords) {
-    vector<GLfloat> result = homogenous_coords;
+    vector<GLfloat> result;
     for(int i = 0; i < homogenous_coords.size(); i+= 4) {
         result.push_back(homogenous_coords[i]);
         result.push_back(homogenous_coords[i + 1]);
@@ -232,8 +232,7 @@ void display_func() {
         0.0,    1.0,    1.0,
     };
     
-//    points = to_cartesian_coord(mat_mult(rotation_matrix_z(theta), to_homogenous_coord(points)));
-    points = to_cartesian_coord(mat_mult(identity_matrix(), to_homogenous_coord(points)));
+    points = to_cartesian_coord(mat_mult(rotation_matrix_z(theta), to_homogenous_coord(points)));
 
     GLfloat* vertices = vector2array(points);
 
