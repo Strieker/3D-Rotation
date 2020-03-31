@@ -86,7 +86,7 @@ vector<GLfloat> rotation_matrix_y (float theta) {
     vector<GLfloat> rotate_mat_y {
         cos(deg2rad(theta)), 0, sin(deg2rad(theta)), 0,
         0, 1, 0, 0,
-        -sin(deg2rad(theta)), cos(deg2rad(theta)), 0, 0,
+        -sin(deg2rad(theta)), 0, cos(deg2rad(theta)), 0,
         0, 0, 0, 1
     };
     return rotate_mat_y;
@@ -103,6 +103,17 @@ vector<GLfloat> rotation_matrix_z (float theta) {
     return rotate_mat_z;
 }
 
+// Definition of identity matrix
+vector<GLfloat> identity_matrix () {
+    vector<GLfloat> identity = {
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
+    };
+    return identity;
+}
+
 // Perform matrix multiplication for A B
 vector<GLfloat> mat_mult(vector<GLfloat> A, vector<GLfloat> B) {
     vector<GLfloat> result;
@@ -113,11 +124,11 @@ vector<GLfloat> mat_mult(vector<GLfloat> A, vector<GLfloat> B) {
     
     for(int i = 0; i < current_mult_points; i++){
         for(int j = 0; j < initial_rows; j++){
-            GLfloat cross_product = 0;
+            GLfloat dot_product = 0;
             for(int k = 0; k < initial_cols; k++){
-                cross_product += A[4 * j + k] * B[4 * i + k];
+                dot_product += A[4 * j + k] * B[4 * i + k];
             }
-            result.push_back(cross_product);
+            result.push_back(dot_product);
         }
     }
     return result;
@@ -221,7 +232,9 @@ void display_func() {
         0.0,    1.0,    1.0,
     };
     
-    points = to_cartesian_coord(mat_mult(rotation_matrix_z(theta), to_homogenous_coord(points)));
+//    points = to_cartesian_coord(mat_mult(rotation_matrix_z(theta), to_homogenous_coord(points)));
+    points = to_cartesian_coord(mat_mult(identity_matrix(), to_homogenous_coord(points)));
+
     GLfloat* vertices = vector2array(points);
 
     glVertexPointer(3,          // 3 components (x, y, z)
